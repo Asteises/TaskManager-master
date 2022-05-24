@@ -17,6 +17,7 @@ public class KVTaskClient {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(path + "/register")).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         apiToken = response.body();
+        System.out.println(apiToken);
     }
 
     public void put(String key, String json) throws IOException, InterruptedException {

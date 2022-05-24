@@ -27,7 +27,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private final String HEADER = "id,type,name,status,description,epic,duration,startTime";
 
     public FileBackedTasksManager() {
-
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {

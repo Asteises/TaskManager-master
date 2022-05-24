@@ -13,11 +13,9 @@ public class HttpTaskServer {
     public static void main(String[] args) throws IOException, InterruptedException {
         HttpServer httpServer = HttpServer.create();
         Handler handler = new Handler();
-
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", handler);
         httpServer.start();
-        new KVServer().start();
     }
 
 

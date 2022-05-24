@@ -37,6 +37,8 @@ public class Task {
         this.startTime = startTime;
     }
 
+    public Task() {}
+
     /**
      * Расчет времени завершения задачи
      */

@@ -64,11 +64,68 @@ public class HTTPTaskManager extends FileBackedTasksManager{
                 sb.append(task.getId()).append(",");
             }
             sb.deleteCharAt(sb.length() - 1);
+        } else sb.append("\n");
             try {
                 kvTaskClient.put("backup", sb.toString());
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }
+    }
+
+    @Override
+    public void saveSubtask(Subtask subtask) {
+        super.saveSubtask(subtask);
+        save();
+    }
+
+    @Override
+    public void saveEpic(Epic epic) {
+        super.saveEpic(epic);
+        save();
+    }
+
+    @Override
+    public void saveTask(Task task) {
+        super.saveTask(task);
+        save();
+    }
+
+    @Override
+    public Task getTaskById(String taskId) {
+        Task task = super.getTaskById(taskId);
+        save();
+        return task;
+    }
+
+    @Override
+    public Epic getEpicById(String epicId) {
+        Epic epic = super.getEpicById(epicId);
+        save();
+        return epic;
+    }
+
+    @Override
+    public Subtask getSubtaskById(String subtaskId) {
+        Subtask subtask = super.getSubtaskById(subtaskId);
+        save();
+        return subtask;
+    }
+
+    @Override
+    public void deleteTask(String taskId) {
+        super.deleteTask(taskId);
+        save();
+    }
+
+    @Override
+    public void deleteEpic(String epicId) {
+        super.deleteEpic(epicId);
+        save();
+    }
+
+    @Override
+    public void deleteSubtask(String subtaskId) {
+        super.deleteSubtask(subtaskId);
+        save();
     }
 }

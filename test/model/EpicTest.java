@@ -1,20 +1,22 @@
 package model;
 
+import org.junit.jupiter.api.Test;
+
 class EpicTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getSubtaskList() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void newSubtask() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void changeStatus() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void testToString() {
     }
 }
