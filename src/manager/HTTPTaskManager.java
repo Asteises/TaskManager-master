@@ -1,75 +1,40 @@
 package manager;
 
-import enums.Type;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import server.KVTaskClient;
-
+import utils.LocalDateTimeAdapter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
+import java.time.LocalDateTime;
 
-public class HTTPTaskManager extends FileBackedTasksManager{
+public class HTTPTaskManager extends FileBackedTasksManager {
     private static KVTaskClient kvTaskClient;
+    private static Gson gson;
 
     public HTTPTaskManager(String uri) throws IOException, InterruptedException {
         kvTaskClient = new KVTaskClient(uri);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gson = gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
+    }
+
+    public HTTPTaskManager() {
     }
 
     public static HTTPTaskManager loadFromServer(String key, String uri) throws IOException, InterruptedException {
-        HTTPTaskManager manager = new HTTPTaskManager(uri);
+        HTTPTaskManager manager;
 
-            StringBuilder sb = new StringBuilder(kvTaskClient.load(key));
-            String[] strings = sb.toString().split("\n");
-            List<String> historyList = historyFromString(strings[strings.length - 1]);
-            strings[strings.length - 1] = null;
-            strings[strings.length - 2] = null;
-            for (String value : strings) {
-                if (value != null) {
-                    Task task = fromString(value);
-                    if (task.getType().equals(Type.TASK)) {
-                        manager.saveTask(task);
-                    } else if (task.getType().equals(Type.EPIC)) {
-                        manager.saveEpic((Epic) task);
-                    } else {
-                        manager.saveSubtask((Subtask) task);
-                    }
-                    if (historyList.contains(task.getId())) {
-                        manager.history().add(task);
-                    }
-                }
-            }
+        manager = gson.fromJson(kvTaskClient.load(key), HTTPTaskManager.class);
+
         return manager;
     }
 
     public void save() {
 
-        StringBuilder sb = new StringBuilder();
-        for (Task task : super.getAllTasks()) {
-            sb.append(task.toString());
-            sb.append("\n");
-        }
-        for (Epic epic : super.getAllEpics()) {
-            sb.append(epic.toString());
-            sb.append("\n");
-        }
-        for (Subtask subtask : super.getAllSubtasks()) {
-            sb.append(subtask.toString());
-            sb.append("\n");
-        }
-        sb.append("\n");
-        if (!super.history().isEmpty()) {
-            for (Task task : super.history()) {
-                sb.append(task.getId()).append(",");
-            }
-            sb.deleteCharAt(sb.length() - 1);
-        } else sb.append("\n");
-            try {
-                kvTaskClient.put("backup", sb.toString());
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        String taskManagerJson = gson.toJson(this);
+        kvTaskClient.put("backup", taskManagerJson);
     }
 
     @Override

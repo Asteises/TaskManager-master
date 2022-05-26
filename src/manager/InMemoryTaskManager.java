@@ -6,6 +6,7 @@ import model.Task;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -29,12 +30,12 @@ public class InMemoryTaskManager implements TaskManager {
      * В задаче именно так и написано: Сложность получения должна быть уменьшена с O(n log n) до O(n).
      */
     public List<Task> getPrioritizedTasks() {
-        return sortedTasks.stream().toList();
+        return new ArrayList<>(sortedTasks);
     }
 
     public static boolean checkTime(LocalDateTime startTime, int duration) {
-        if (sortedTasks.size() == 0 || (startTime.isAfter(sortedTasks.stream().toList().get(0).getStartTime()) ||
-                startTime.plusMinutes(duration).isBefore(sortedTasks.stream().toList().
+        if (sortedTasks.size() == 0 || (startTime.isAfter(new ArrayList<>(sortedTasks).get(0).getStartTime()) ||
+                startTime.plusMinutes(duration).isBefore(new ArrayList<>(sortedTasks).
                         get(sortedTasks.size() - 1).getStartTime()))) {
             return true;
         }

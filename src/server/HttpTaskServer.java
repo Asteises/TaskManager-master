@@ -17,6 +17,4 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks", handler);
         httpServer.start();
     }
-
-
 }

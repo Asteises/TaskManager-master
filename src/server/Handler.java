@@ -2,26 +2,20 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import enums.Status;
 import manager.HTTPTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import utils.LocalDateTimeDeserializer;
+import utils.LocalDateTimeSerializer;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -34,13 +28,12 @@ class Handler implements HttpHandler {
 
     public Handler() throws IOException, InterruptedException {
         tasksManager = managers.getDefault(uri);
-        gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
-            @Override
-            public LocalDateTime deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                Instant instant = Instant.ofEpochMilli(jsonElement.getAsJsonPrimitive().getAsLong());
-                return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-            }
-        }).create();
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
+        gson = gsonBuilder.create();
+
     }
 
 
@@ -134,23 +127,26 @@ class Handler implements HttpHandler {
     public void handlePost(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().toString();
         if (path.contains("tasks/task")) {
-            String json = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-            Task task = gson.fromJson(json, Task.class);
-            task.setStartTime(LocalDateTime.now());
-            tasksManager.saveTask(task);
-            exchange.sendResponseHeaders(200,0);
-            System.out.println(task);
+            try {
+                String json = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                Task task = gson.fromJson(json, Task.class);
+//                task.setStartTime(LocalDateTime.now());
+                tasksManager.saveTask(task);
+                exchange.sendResponseHeaders(200,0);
+                System.out.println(task);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
+
         } else if (path.contains("tasks/epic")) {
             String json = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             Epic epic = gson.fromJson(json, Epic.class);
-            epic.setStartTime(LocalDateTime.now());
             tasksManager.saveEpic(epic);
             exchange.sendResponseHeaders(200,0);
             System.out.println(epic);
         } else if (path.contains("tasks/subtask")) {
             String json = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             Subtask subtask = gson.fromJson(json, Subtask.class);
-            subtask.setStartTime(LocalDateTime.now());
             tasksManager.saveSubtask(subtask);
             exchange.sendResponseHeaders(200, 0);
             System.out.println(subtask);
