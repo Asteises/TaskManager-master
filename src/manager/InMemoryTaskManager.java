@@ -26,9 +26,6 @@ public class InMemoryTaskManager implements TaskManager {
         sortedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
-    /**
-     * В задаче именно так и написано: Сложность получения должна быть уменьшена с O(n log n) до O(n).
-     */
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(sortedTasks);
     }
@@ -142,9 +139,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    /**
-     * Epic нет в sortedTasks.
-     */
     @Override
     public void updateEpic(Epic epic) {
         epics.put(epic.getId(), epic);
@@ -194,23 +188,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getAllSubtaskByEpic(String epicId) {
         return new ArrayList<>(epics.get(epicId).getSubtasks());
-    }
-
-    @Override
-    public void printAllTasks(List<Task> tasks) {
-        for (Task task : tasks) {
-            System.out.println("id: " + task.getId() + ". " + task.getName());
-        }
-    }
-
-    @Override
-    public void printAllEpicsAndSubtasks(List<Epic> epics) {
-        for (Epic epic : epics) {
-            System.out.println("id: " + epic.getId() + ". " + epic.getName());
-            for (Subtask subtask : epic.getSubtasks()) {
-                System.out.println("    id: " + subtask.getId() + ". " + subtask.getName());
-            }
-        }
     }
 
     @Override

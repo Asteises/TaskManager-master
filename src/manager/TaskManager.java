@@ -56,11 +56,5 @@ public interface TaskManager {
     // Получение списка всех подзадач определённого эпика:
     List<Subtask> getAllSubtaskByEpic(String epicId);
 
-    // Выводим в консоль все таски для проверки:
-    void printAllTasks(List<Task> tasks);
-
-    // Выводим в консоль все епики с подзадачами для проверки:
-    void printAllEpicsAndSubtasks(List<Epic> epics);
-
     List<Task> history();
 }

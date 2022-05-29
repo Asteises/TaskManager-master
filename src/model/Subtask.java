@@ -4,6 +4,7 @@ import enums.Status;
 import enums.Type;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /*
 Subtask - класс для подзадачи внутри задачи Epic.
@@ -19,6 +20,10 @@ public class Subtask extends Task {
         super(status, name, description, duration, startTime);
         this.epicId = epicId;
         this.type = Type.SUBTASK;
+    }
+
+    public Subtask() {
+        this.epicId = UUID.randomUUID().toString();
     }
 
     public LocalDateTime getEndTime(LocalDateTime startTime, int duration) {

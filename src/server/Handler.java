@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-class Handler implements HttpHandler {
+public class Handler implements HttpHandler {
     private final String uri = "http://localhost:8078";
     private final Managers managers = new Managers();
     private TaskManager tasksManager;
@@ -113,7 +113,7 @@ class Handler implements HttpHandler {
         } else if (path.contains("tasks/load")) {
             try {
                 String key = exchange.getRequestURI().toString().substring("/tasks/load/?key=".length());
-                tasksManager = HTTPTaskManager.loadFromServer(key, "http://localhost:8078");
+                tasksManager = HTTPTaskManager.loadFromServer("http://localhost:8078");
                 exchange.sendResponseHeaders(200,0);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -157,16 +157,21 @@ class Handler implements HttpHandler {
     public void handleDelete(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().toString();
         if (path.contains("tasks/task")) {
-            if(path.equals("tasks/task")) {
+            if (path.equals("tasks/task")) {
                 tasksManager.clearTasks();
                 exchange.sendResponseHeaders(200, 0);
                 System.out.println("Все task удалены.");
             }
             if (path.equals("tasks/task/?id=")) {
                 String id = exchange.getRequestURI().toString().substring("/tasks/task/?id=".length());
-                tasksManager.deleteTask(id);
-                exchange.sendResponseHeaders(200, 0);
-                System.out.println("Task " + id + " удалена.");
+                if (tasksManager.getTaskById(id) != null) {
+                    tasksManager.deleteTask(id);
+                    exchange.sendResponseHeaders(200, 0);
+                    System.out.println("Task " + id + " удалена.");
+                } else {
+                    exchange.sendResponseHeaders(404, 0);
+                    System.out.println("Task " + id + " не найден.");
+                }
             }
         } else if (path.contains("tasks/subtask")) {
             if (path.equals("tasks/subtask")) {
@@ -176,9 +181,14 @@ class Handler implements HttpHandler {
             }
             if (path.equals("tasks/subtask/?id=")) {
                 String id = exchange.getRequestURI().toString().substring("tasks/subtask/?id=".length());
-                tasksManager.deleteSubtask(id);
-                exchange.sendResponseHeaders(200, 0);
-                System.out.println("Subtask " + id + " удалена.");
+                if (tasksManager.getEpicById(id) != null) {
+                    tasksManager.deleteSubtask(id);
+                    exchange.sendResponseHeaders(200, 0);
+                    System.out.println("Subtask " + id + " удалена.");
+                } else {
+                    exchange.sendResponseHeaders(404, 0);
+                    System.out.println("Subtask " + id + " не найден.");
+                }
             }
         } else if (path.contains("tasks/epic")) {
             if (path.equals("/tasks/epic")) {
@@ -187,9 +197,14 @@ class Handler implements HttpHandler {
                 System.out.println("Все epic удалены.");
             } else if (path.contains("tasks/epic/?id=")) {
                 String id = exchange.getRequestURI().toString().substring("/tasks/epic/?id=".length());
-                tasksManager.deleteEpic(id);
-                exchange.sendResponseHeaders(200, 0);
-                System.out.println("Epic" + id + " удален.");
+                if (tasksManager.getSubtaskById(id) != null) {
+                    tasksManager.deleteEpic(id);
+                    exchange.sendResponseHeaders(200, 0);
+                    System.out.println("Epic" + id + " удален.");
+                } else {
+                    exchange.sendResponseHeaders(404, 0);
+                    System.out.println("Epic" + id + " не найден.");
+                }
             }
         }
         exchange.close();

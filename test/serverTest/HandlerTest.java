@@ -1,4 +1,4 @@
-package server;
+package serverTest;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.Handler;
+import server.KVServer;
 
 import java.awt.event.ActionListener;
 import java.io.IOException;

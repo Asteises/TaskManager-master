@@ -1,15 +1,9 @@
 package manager;
 
 import enums.Status;
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
-import manager.TaskManager;
 import model.Task;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
@@ -20,7 +14,6 @@ class InMemoryHistoryManagerTest {
 
         Task task1 = new Task(Status.NEW,"Test task  name", "Test task description", 100, LocalDateTime.now());
         taskManager.saveTask(task1);
-
     }
 
     @Test

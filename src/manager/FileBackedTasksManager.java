@@ -77,6 +77,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return String.valueOf(sb);
     }
 
+    public List<Task> getHistoryForJson() {
+        return super.history();
+    }
+
     public String toString() {
         return super.getAllTasks().toString() + "\n" + super.getAllEpics().toString() + "\n"
                 + super.getAllSubtasks().toString() + "\n\n" + getHistory();

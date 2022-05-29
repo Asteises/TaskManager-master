@@ -25,6 +25,10 @@ public class Epic extends Task {
         this.type = Type.EPIC;
     }
 
+    public Epic() {
+        subtasks = new ArrayList<>();
+    }
+
     /**
      * Проходимся по всем сабтаскам епика и складываем продолжительность всех его подзадач.
      */
